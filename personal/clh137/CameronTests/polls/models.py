@@ -22,3 +22,6 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+class Test(models.Model):
+    text = models.CharField(max_length = 200)
