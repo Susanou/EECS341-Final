@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'polls.apps.PollsConfig',
+    'login.apps.LoginConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,6 +86,8 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = "login.User" 
 
 AUTH_PASSWORD_VALIDATORS = [
     {
