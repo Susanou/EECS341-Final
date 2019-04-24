@@ -18,10 +18,19 @@ from django.urls import path, include
 from django.conf.urls import url
 from rest_framework_swagger.views import get_swagger_view
 
+from login import views
+
 schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
-    url(r'^$', schema_view),
+    url(r'^api/$', schema_view),
+    url(r'^accounts/$', include('django.contrib.auth.urls')),
+    url(r'^accounts/signup/$', views.SignUpView.as_view(), name='singup'),
+    path('accounts/singup/student', views.StudentSignUpView.as_view(), name='student_signup'),
+    path('accounts/singup/teacher', views.TeacherSignUpView.as_view(), name='teacher_signup'),
+    path('login/', include('login.urls')),
+
+
 ]
