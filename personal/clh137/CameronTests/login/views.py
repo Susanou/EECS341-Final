@@ -40,6 +40,7 @@ class TeacherSignUpView(CreateView):
         login(self.request, user)
         return redirect('teachers:success')
 
+
 @login_required
 @teacher_required
 def TeacherSuccess(request):

@@ -22,6 +22,7 @@ schema_view = get_swagger_view(title='Pastebin API')
 
 urlpatterns = [
     path('polls/', include('polls.urls')),
+    path('profile/', include('profile.urls')),
     path('admin/', admin.site.urls),
     url(r'^$', schema_view),
 ]
