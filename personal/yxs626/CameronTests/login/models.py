@@ -13,7 +13,7 @@ class User(Abstractuser):
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
-from datetime import time
+from datetime import datetime, date, time, timedelta
 
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
@@ -47,7 +47,8 @@ class Class(models.Model):
         ('SUN', 'Sunday'),
     )
     time_day = models.CharField(max_length=3, choices=day_options, default='WED')
-    time_start = models.TimeField(default=time(15, 30, 0)) #default start time is 15:30:00, use print() to retrieve later on
+    #default start time is 15:30:00, use print() to retrieve later on
+    time_start = models.TimeField(default=time(15, 30, 0)) 
     time_end = models.TimeField(default=time(16, 30, 0))
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
@@ -61,10 +62,8 @@ class Member(models.Model):
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True) # validators should be a list
 
 class Membership(models.Model):
-    '''
-    Length should be datetime.date value or should it be just an integer?
-    '''
     funds = models.IntegerField()
-    length = models.IntegerField()
-    #length = models.DateField()
+    #changed length to expired date, default to a month from now 
+    expired_date = models.DateField(default=date(datetime.now().year, 
+                                    datetime.now().month, datetime.now().day) + timedelta(days=30))
 
