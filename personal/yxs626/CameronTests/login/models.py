@@ -13,7 +13,7 @@ class User(Abstractuser):
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
-
+from datetime import time
 
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
@@ -37,11 +37,23 @@ class MemberLevel(models.Model):
 class Class(models.Model):
     name = models.CharField(max_length = 50)
     location = models.CharField(max_length=50)
+    day_options = (
+        ('MON', 'Monday'),
+        ('TUE', 'Tuesday'),
+        ('WED', 'Wednesday'),
+        ('THU', 'Thursday'),
+        ('FRI', 'Friday'),
+        ('SAT', 'Saturday'),
+        ('SUN', 'Sunday'),
+    )
+    time_day = models.CharField(max_length=3, choices=day_options, default='WED')
+    time_start = models.TimeField(default=time(15, 30, 0)) #default start time is 15:30:00, use print() to retrieve later on
+    time_end = models.TimeField(default=time(16, 30, 0))
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key = True)
-    classes = models.ForeignKey(Class, on_delete = models.CASCADE)
+    classes = models.ManyToManyField(Class)
     level = models.ForeignKey(MemberLevel, default='B', on_delete = models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
