@@ -1,15 +1,47 @@
-{% extends "base.html" %}
+{% extends "../base.html" %}
 
 {% block content %}
 
 <h1> User Profile</h1>
 
-<p1> 
-    Name: {{member.name}} 
+<p1>
+    Name: {{member.name}}
 </p>
 
-<p1> 
+<p1>
     Email: {{member.email}}
+</p>
+
+<p1>
+    Phone number: {{member.phone_number}}
+</p>
+
+<p1>
+    Remaining funds: {{member.funds}}
+</p>
+
+<p1>
+    Membership Level: {{level.get_level_status_display}}
+</p>
+
+<p1>
+    Valid untill: {{member.expired_date}}
+</p>
+
+<p1>
+    Enrolled class list:
+  <ul>
+  {% for class in member.classes.all %}
+      <li><a href="{% url 'profile:class' class.id%}">{{class.name}}</a></li>
+  {% endfor %}
+  </ul>
+</p>
+
+<p1>
+    Want to enroll more classes?
+    <ul>
+    <li><a href="{% url 'profile:classlist'%}">sign up for classes</a></li> </p2>
+    </ul>
 </p>
 
 <!-- nijixu -->
