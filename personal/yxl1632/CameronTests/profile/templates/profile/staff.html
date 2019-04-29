@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1> Staff Profile</h1>
+
+<p1>
+    Name: {{staff.name}}
+</p1>
+
+<p1>
+    Email: {{staff.email}}
+</p1>
+
+<p1>
+  <ul>
+  {% for class in classes.all %}
+      class:
+      <li><a href="{% url 'profile:class' class.id%}">{{class.name}}</a></li>
+  {% endfor %}
+  </ul>
+</p1>
+
+{% endblock content %}

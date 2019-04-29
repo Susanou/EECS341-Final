@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1> User Profile</h1>
+
+<p1>
+    Name: {{member.name}}
+</p1>
+
+<p1>
+    Email: {{member.email}}
+</p1>
+
+<p1>
+  <ul>
+  {% for class in member.classes.all %}
+      class:
+      <li><a href="{% url 'profile:class' class.id%}">{{class.name}}</a></li>
+  {% endfor %}
+  <p2> <li><a href="{% url 'profile:classlist'%}">sign up for classes</a></li> </p2>
+  </ul>
+</p1>
+
+
+
+<!-- nijixu -->
+
+{% endblock content %}

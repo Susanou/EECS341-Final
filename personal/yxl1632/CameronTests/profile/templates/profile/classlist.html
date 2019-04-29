@@ -1,0 +1,8 @@
+click class to sign up
+<p1>
+  <ul>
+  {% for class in classlist %}
+      <li><a href="{% url 'profile:index'%}">{{class.name}}</a></li>
+  {% endfor %}
+  </ul>
+</p1>
