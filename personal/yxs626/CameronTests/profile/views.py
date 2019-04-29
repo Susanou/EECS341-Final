@@ -16,6 +16,6 @@ def index(request):
         raise Http404("no such member")
     print(member)
     context = {
-        'Display the member name' : member.name, 
+        'member' : member, 
     }
     return render(request, 'profile/index.html', context)
