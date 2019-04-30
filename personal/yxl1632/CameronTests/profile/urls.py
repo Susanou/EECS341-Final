@@ -12,5 +12,6 @@ urlpatterns = [
     path('classlist', views.classlist, name='classlist'),
     path('staff', views.staff, name='staff'),
     path('UpdateEmail',views.UpdateEmail, name='UpdateEmail'),
+    path('UpdatePhone',views.UpdatePhone, name='UpdatePhone'),
     path('<int:class_id>/registerClass',views.registerClass, name='registerClass'),
 ]

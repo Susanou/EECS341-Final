@@ -1,19 +1,15 @@
-""" from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-
-# Create your models here.
-
-class User(Abstractuser):
-    is_member = models.BooleanField(default = False)
-    is_staff = models.BooleanField(default = False)
-     """
-
-
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.core.validators import RegexValidator
 from datetime import datetime, date, time, timedelta
+from django.contrib.auth.models import User, Group
+
+from django.contrib.auth import get_user_model
+
+#User = get_user_model()
+
+#class CustomUserManager(UserManager):
+#    pass
 
 class User(AbstractUser):
     is_student = models.BooleanField(default=False)
@@ -29,7 +25,7 @@ class MemberLevel(models.Model):
         ('S', 'Silver'),
         ('G', 'Gold'),
         ('P', 'Platinum'),
-        ('D', 'Diamond'), 
+        ('D', 'Diamond'),
     )
     level_status = models.CharField(max_length=1, choices=name, default='B', primary_key=True)
     price = models.FloatField()
@@ -48,7 +44,7 @@ class Class(models.Model):
     )
     time_day = models.CharField(max_length=3, choices=day_options, default='WED')
     #default start time is 15:30:00, use print() to retrieve later on
-    time_start = models.TimeField(default=time(15, 30, 0)) 
+    time_start = models.TimeField(default=time(15, 30, 0))
     time_end = models.TimeField(default=time(16, 30, 0))
     staff = models.ForeignKey(Staff, on_delete=models.CASCADE)
 
@@ -57,8 +53,8 @@ class Member(models.Model):
     classes = models.ManyToManyField(Class)
     level = models.ForeignKey(MemberLevel, default='B', on_delete = models.CASCADE)
     funds = models.FloatField(default=0)
-    #changed length to expired date, default to a month from now 
-    expired_date = models.DateField(default=date(datetime.now().year, 
+    #changed length to expired date, default to a month from now
+    expired_date = models.DateField(default=date(datetime.now().year,
                                     datetime.now().month, datetime.now().day) + timedelta(days=30))
     name = models.CharField(max_length=100)
     email = models.EmailField()

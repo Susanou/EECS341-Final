@@ -1,9 +1,13 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
-from django.db import connection
+from django.db import connection, IntegrityError
 from django.db.models import Count, query
 from login.models import Member, Class, Staff, MemberLevel
+from login.forms import CustomUserCreationForm
+from django.contrib import messages
+
+from django.contrib.auth import get_user_model
 
 
 # Create your views here.
@@ -14,12 +18,25 @@ def index(request):
         # need to adjust given input
         mname = 'Melody'
         #using raw sql
-        member = Member.objects.raw('SELECT * FROM login_member m WHERE m.name = %s', [mname])[0]
-        classes = Class.objects.raw('SELECT c.id, c.name, c.location, c.staff_id FROM login_class c, login_member m WHERE m.name = %s AND m.classes_id = c.id', [mname])
-        level = MemberLevel.objects.raw('SELECT l.level_status, l.price FROM login_memberlevel l, login_member m WHERE m.name = %s AND m.level_id = l.level_status', [mname])[0]
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.name = %s", [mname])
+            member = cursor.fetchone()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [3])
+            classes = cursor.fetchall()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.name = %s AND m.level_id = l.level_status", [mname])
+            l = cursor.fetchone()[0]
+        levels = {
+        "B": "Bronze",
+        "S": "Silver",
+        "G": "Gold",
+        "P": "Platinum",
+        "D": "Diamond"
+        }
+        level = levels[l]
     except Member.DoesNotExist:
         raise Http404("no such member")
-    print(member)
     context = {
         'member' : member,
         'classes': classes,
@@ -31,16 +48,24 @@ def index(request):
 def UpdateEmail(request):
     if request.method == 'POST':
         mname = 'Melody'
-        #using raw sql
-        member = Member.objects.raw('SELECT * FROM login_member m WHERE m.name = %s', [mname])[0]
         newemail = request.POST.get('uemail',None)
-        member.email = newemail
-        member.save()
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE login_member SET email = %s WHERE login_member.name = %s", [newemail, mname])
         return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
 
+# also need user id input here
+def UpdatePhone(request):
+    if request.method == 'POST':
+        mname = 'Melody'
+        newphone = request.POST.get('uphone',None)
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.name = %s", [newphone, mname])
+        return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
 
 def classInfo(request, class_id):
-    class_object = Class.objects.raw('SELECT * FROM login_class c WHERE c.id = %s', [class_id])[0]
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end, s.name FROM login_class c, login_staff s WHERE c.id = %s AND s.user_id = c.staff_id" , [class_id])
+        class_object = cursor.fetchone()
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(DISTINCT id) FROM login_member_classes WHERE login_member_classes.class_id = %s", [class_id])
         row = cursor.fetchone()
@@ -52,7 +77,9 @@ def classInfo(request, class_id):
     return render(request, 'profile/class.html', context)
 
 def classlist(request):
-    classlist = Class.objects.raw('SELECT * FROM login_class')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM login_class")
+        classlist = cursor.fetchall()
     context = {
         'classlist': classlist,
     }
@@ -61,16 +88,19 @@ def classlist(request):
 def registerClass(request, class_id):
     if request.method == 'POST':
         mname = 'Melody'
-        #using raw sql
-        member = Member.objects.raw('SELECT * FROM login_member m WHERE m.name = %s', [mname])[0]
-        class_object = Class.objects.raw('SELECT * FROM login_class c WHERE c.id = %s', [class_id])[0]
-        #newentry = Member(user = member.user, classes = class_object, level=member.level, funds=member.funds, expired_date = member.expired_date, name = member.name, email = member.email, phone_regex=member.phone_regex, phone_number = member.phone_number)
-        #newentry.save()
-        classlist = Class.objects.raw('SELECT c.id, c.name, c.location, c.staff_id FROM login_class c, login_member m WHERE m.name = %s AND m.classes_id = c.id', [mname])
-        member.classes.update(classlist.union(class_object))
-        member.save()
-        return HttpResponseRedirect(reverse('profile:classlist.html' ))#args=(question.id,)))
+        mid = 3
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [mid, class_id])
+            msg = 'ADMIN: class successfully registered'
 
+        except IntegrityError as e:
+            msg = 'ADMIN: class already registered'
+        context = {
+            'msg': msg,
+            'back': 'go back to class list'
+        }
+        return render(request, 'profile/classlist.html', context)
 
 # implement raw sql query later on
 def staff(request):
@@ -85,3 +115,16 @@ def staff(request):
         'classes': classes,
     }
     return render(request, 'profile/staff.html', context)
+
+def signup(request):
+    User = get_user_model()
+    if request.method=='POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('signup')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'signup/signup.html',{'form':form})
