@@ -8,8 +8,8 @@
 </br>
 
 <p1>
-  Below are the available courses, 
-  click "see more details" for more information about the course, 
+  Below are the available courses,
+  click "see more details" for more information about the course,
   or you can register directly by clicking "register".
 </p>
 
@@ -18,10 +18,16 @@
 <p1>
   <ol>
   {% for class in classlist %}
-      <li> {{class.name}}     
-        <a href="{% url 'profile:class' class.id%}">see more details</a>    
+      <li> {{class.1}}
+        <a href="{% url 'profile:class' class.0%}">see more details</a>
         <!-- change the profile:index below to profile:success once the page is implemented-->
-        <a href="{% url 'profile:index'%}">regiser</a></li>
+        <form action="{% url 'profile:registerClass' class.0%}" method="post">
+          {% csrf_token %}
+            <div>
+                <input type="hidden" name=test value=1>
+                <input type="submit" value="Register">
+            </div>
+        </form>
   {% endfor %}
   </ol>
 </p>
