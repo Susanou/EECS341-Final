@@ -89,7 +89,7 @@ def registerClass(request, class_id):
         try: 
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [mid, class_id])
-            return HttpResponseRedirect(reverse('profile:classlist' ))#args=(question.id,)))
+            return HttpResponseRedirect('profile:registerClass' )#args=(question.id,)))
         except IntegrityError as e:
             raise Http404("already registered")
         

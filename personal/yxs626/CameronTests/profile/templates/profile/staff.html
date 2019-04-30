@@ -9,7 +9,7 @@
 <form>
     <div>
         <label for="sname">Legal full name: </label> <br>
-        <input type="text" id="sname" name="sname" value="{{staff.name}}" readonly>
+        <input type="text" id="sname" name="sname" value="{{staff.name}}" readonly> <br>
         <small> *please contact the admin if you need to change your legal full name</small>
     </div>
 </form>
@@ -26,7 +26,8 @@
             <a href="{% url 'profile:staff'%}">delete</a></li>
         {% endfor %}
     </ul>
-    <a href="{% url 'profile:classlist'%}"> See all available courses </a>
+    See more classes: <br>
+    <a href="{% url 'profile:classlist'%}"> Full class list </a>
 </p1>
 
 
