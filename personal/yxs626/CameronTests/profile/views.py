@@ -33,7 +33,6 @@ def index(request):
         level = levels[l]                      
     except Member.DoesNotExist:
         raise Http404("no such member")
-    print(member)
     context = {
         'member' : member,
         'classes': classes,
@@ -89,9 +88,15 @@ def registerClass(request, class_id):
         try: 
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [mid, class_id])
-            return HttpResponseRedirect('profile:registerClass' )#args=(question.id,)))
+            msg = 'ADMIN: class successfully registered'
+            
         except IntegrityError as e:
-            raise Http404("already registered")
+            msg = 'ADMIN: class already registered'
+        context = {
+            'msg': msg,
+            'back': 'go back to class list'
+        }
+        return render(request, 'profile/classlist.html', context)
         
 # implement raw sql query later on
 def staff(request):

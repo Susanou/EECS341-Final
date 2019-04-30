@@ -1,15 +1,3 @@
-""" from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-
-# Create your models here.
-
-class User(Abstractuser):
-    is_member = models.BooleanField(default = False)
-    is_staff = models.BooleanField(default = False)
-     """
-
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import RegexValidator
