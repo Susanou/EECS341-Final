@@ -2,18 +2,25 @@
 
 {% block content %}
 
-<h1> Class info</h1>
+<h1> {{class.name}} </h1>
 
 <p1>
-    Name: {{class.name}}
-</p1>
+    Meeting location: {{class.location}}
+</p>
 
 <p1>
     Instructor: {{class.staff.name}}
-</p1>
+</p>
 
+<p1>
+    Meeting day and time: every {{class.get_time_day_display}} 
+                          from {{class.time_start}} 
+                          to  {{class.time_end}}
+</p>
 
-
-<!-- nijixu -->
+<p1>
+    Number of enrolled students: {{number}}
+</p>
+    
 
 {% endblock content %}
