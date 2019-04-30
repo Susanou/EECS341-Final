@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
-
+from django.db import connection
+from django.db.models import Count
 from login.models import Member, Class, Staff, MemberLevel
 
 # Create your views here.
@@ -11,7 +12,7 @@ from login.models import Member, Class, Staff, MemberLevel
 def index(request):
     try:
         # need to adjust given input
-        mname = 'GenTsuki'
+        mname = 'Melody'
         #using raw sql
         member = Member.objects.raw('SELECT * FROM login_member m WHERE m.name = %s', [mname])[0]
         classes = Class.objects.raw('SELECT c.id, c.name, c.location, c.staff_id FROM login_class c, login_member m WHERE m.name = %s AND m.classes_id = c.id', [mname])
@@ -27,16 +28,25 @@ def index(request):
     return render(request, 'profile/index.html', context)
 
 def classInfo(request, class_id):
-    class_object = get_object_or_404(Class, pk=class_id)
-    return render(request,'profile/class.html',{'class':class_object})
+    class_object = Class.objects.raw('SELECT * FROM login_class c WHERE c.id = %s', [class_id])[0]
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT COUNT(DISTINCT id) FROM login_member_classes WHERE login_member_classes.class_id = %s", [class_id])
+        row = cursor.fetchone()
+        student_num = row[0]
+    context = {
+        'class': class_object,
+        'number': student_num
+    }
+    return render(request, 'profile/class.html', context)
 
 def classlist(request):
-    classlist = Class.objects.all()
+    classlist = Class.objects.raw('SELECT * FROM login_class')
     context = {
         'classlist': classlist,
     }
     return render (request, 'profile/classlist.html',context)
 
+# implement raw sql query later on
 def staff(request):
     try:
         # need to adjust given input
