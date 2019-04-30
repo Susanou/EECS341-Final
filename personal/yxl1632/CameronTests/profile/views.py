@@ -7,7 +7,7 @@ from login.models import Member, Class, Staff, MemberLevel
 from login.forms import CustomUserCreationForm
 from django.contrib import messages
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model,authenticate, login
 
 
 # Create your views here.
@@ -124,7 +124,17 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
-            return redirect('signup')
+            return redirect('login')
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup/signup.html',{'form':form})
+
+def login_view(request):
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return render(request, 'profile/index.html')
+    else:
+        return render(request, 'login/login.html')

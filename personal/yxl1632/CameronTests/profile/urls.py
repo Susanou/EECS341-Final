@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.contrib.auth import views as auth_views
 from . import views
 
 app_name = 'profile'
@@ -7,6 +7,8 @@ app_name = 'profile'
 urlpatterns = [
     # "/polls" is the prefix
     path('', views.index, name='index'),
+    path('login', views.login_view, name='login'),
+    path('logout', auth_views.LogoutView.as_view(template_name='login/logout.html'), name='logout'),
     path('index', views.index, name='index'),
     path('<int:class_id>/class/', views.classInfo, name='class'),
     path('classlist', views.classlist, name='classlist'),

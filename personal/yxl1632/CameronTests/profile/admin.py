@@ -14,4 +14,5 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(Staff)
 admin.site.register(Class)
 admin.site.register(MemberLevel)
+admin.site.register(Member)
 admin.site.register(User, CustomUserAdmin)
