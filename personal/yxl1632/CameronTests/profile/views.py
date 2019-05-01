@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.db import connection, IntegrityError
 from django.db.models import Count, query
-from login.models import Member, Class, Staff, MemberLevel
+from login.models import Member, Class, Staff, MemberLevel, User
 from login.forms import CustomUserCreationForm
 from django.contrib import messages
 
@@ -13,19 +13,19 @@ from django.contrib.auth import get_user_model,authenticate, login
 # Create your views here.
 
 #testing directing to url
-def index(request):
+def index(request, user_id):
     try:
         # need to adjust given input
-        mname = 'Melody'
+
         #using raw sql
         with connection.cursor() as cursor:
-            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.name = %s", [mname])
+            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
             member = cursor.fetchone()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [3])
+            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [user_id])
             classes = cursor.fetchall()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.name = %s AND m.level_id = l.level_status", [mname])
+            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
             l = cursor.fetchone()[0]
         levels = {
         "B": "Bronze",
@@ -135,6 +135,11 @@ def login_view(request):
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
-        return render(request, 'profile/index.html')
+        context = {
+            'user_id' : user.id
+        }
+        #return redirect(reverse('profile:%d' % user.id))
+        return redirect('profile:login')
+        #return HttpResponseRedirect(reverse('profile/%s' % user.id))
     else:
         return render(request, 'login/login.html')

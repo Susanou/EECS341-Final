@@ -9,12 +9,10 @@
           <label for="username">Username: </label>  <br>
           <input type="username" id="username" name="username">
           <input type="passwords" id="password" name="password">
-          <input type="submit" value="Log In"> <br>
-      </div>
-      <div class="form-group">
-        <button type="submit" name="button"> Log in </button>
+          <input type="submit"> <a href="{% url 'profile:index' user.id %}">login</a> <br>
       </div>
   </form>
+
   <div class="border-top pt-3">
     New Member?
     <a href="{% url 'signup'%}"> Sign up </a>
