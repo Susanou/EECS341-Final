@@ -6,9 +6,8 @@ from django.db.models import Count, query
 from login.models import Member, Class, Staff, MemberLevel, User
 from login.forms import CustomUserCreationForm
 from django.contrib import messages
-
 from django.contrib.auth import get_user_model,authenticate, login
-
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
@@ -45,6 +44,7 @@ def index(request, user_id):
     return render(request, 'profile/index.html', context)
 
 # also need user id input here
+@api_view(['PUT'])
 def UpdateEmail(request):
     if request.method == 'POST':
         mname = 'Melody'
@@ -54,6 +54,7 @@ def UpdateEmail(request):
         return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
 
 # also need user id input here
+@api_view(['PUT'])
 def UpdatePhone(request):
     if request.method == 'POST':
         mname = 'Melody'
@@ -62,6 +63,7 @@ def UpdatePhone(request):
             cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.name = %s", [newphone, mname])
         return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
 
+@api_view(['GET'])
 def classInfo(request, class_id):
     with connection.cursor() as cursor:
         cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end, s.name FROM login_class c, login_staff s WHERE c.id = %s AND s.user_id = c.staff_id" , [class_id])

@@ -6,7 +6,7 @@ from . import views
 app_name = 'profile'
 
 urlpatterns = [
-    # "/polls" is the prefix
+    # "/profile" is the prefix
     path('<int:user_id>', views.index, name='index'),
     path('login', views.login_view, name='login'),
     path('logout', auth_views.LogoutView.as_view(template_name='login/logout.html'), name='logout'),
