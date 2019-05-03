@@ -9,14 +9,12 @@ from django.contrib import messages
 
 from django.contrib.auth import get_user_model,authenticate, login
 
-
 # Create your views here.
 
 #testing directing to url
 def index(request, user_id):
     try:
         # need to adjust given input
-
         #using raw sql
         with connection.cursor() as cursor:
             cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
@@ -46,21 +44,24 @@ def index(request, user_id):
 
 # also need user id input here
 def UpdateEmail(request):
+    user_id = request.user.id
     if request.method == 'POST':
         mname = 'Melody'
         newemail = request.POST.get('uemail',None)
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE login_member SET email = %s WHERE login_member.name = %s", [newemail, mname])
-        return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
+            cursor.execute("UPDATE login_member SET email = %s WHERE login_member.user_id = %s", [newemail, user_id])
+            #return HttpResponseRedirect(reverse('profile:index' ),{'user_id'=user_id})#args=(question.id,)))
+        return HttpResponseRedirect(reverse('profile:index',args = {user_id}))
 
 # also need user id input here
 def UpdatePhone(request):
+    user_id = request.user.id
     if request.method == 'POST':
         mname = 'Melody'
         newphone = request.POST.get('uphone',None)
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.name = %s", [newphone, mname])
-        return HttpResponseRedirect(reverse('profile:index' ))#args=(question.id,)))
+            cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.user_id = %s", [newphone, user_id])
+        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )#args=(question.id,)))
 
 def classInfo(request, class_id):
     with connection.cursor() as cursor:
@@ -86,12 +87,11 @@ def classlist(request):
     return render (request, 'profile/classlist.html',context)
 
 def registerClass(request, class_id):
+    user_id = request.user.id
     if request.method == 'POST':
-        mname = 'Melody'
-        mid = 3
         try:
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [mid, class_id])
+                cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [user_id, class_id])
             msg = 'ADMIN: class successfully registered'
 
         except IntegrityError as e:
@@ -106,13 +106,21 @@ def registerClass(request, class_id):
 def staff(request):
     try:
         # need to adjust given input
-        staff = Staff.objects.get(name='Melody')
-        classes = Class.objects.filter(staff=staff)
-    except Class.DoesNotExist:
-        raise Http404("no such member")
+        user_id = request.user.id
+        empty = False
+        with connection.cursor() as cursor1, connection.cursor() as cursor2:
+            cursor1.execute("SELECT s.name FROM login_staff s WHERE s.user_id = %s", [user_id])
+            cursor2.execute("SELECT c.id, c.name FROM login_class c WHERE c.staff_id = %s", [user_id])
+            staff = cursor1.fetchall()[0]
+            classes = cursor2.fetchall()
+        if (len(classes) == 0):
+            empty = True
+    except IndexError as e:
+        raise Http404("No matching staff portal, please contact admin to become a staff.")
     context = {
         'staff' : staff,
         'classes': classes,
+        'empty': empty
     }
     return render(request, 'profile/staff.html', context)
 
@@ -124,7 +132,8 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
-            return redirect('login')
+            return redirect('profile:login')
+    #travis, insert a new member after sign up
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup/signup.html',{'form':form})
