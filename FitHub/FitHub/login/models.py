@@ -61,8 +61,8 @@ class Class(models.Model):
 
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key = True)
-    classes = models.ManyToManyField(Class)
-    level = models.ForeignKey(MemberLevel, default='B', on_delete = models.CASCADE)
+    classes = models.ManyToManyField(Class, blank = True, null = True)
+    level = models.ForeignKey(MemberLevel, default = 'B', on_delete = models.CASCADE)
     funds = models.FloatField(default=0)
     #changed length to expired date, default to a month from now
     expired_date = models.DateField(default=date(datetime.now().year,

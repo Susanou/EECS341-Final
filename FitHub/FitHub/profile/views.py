@@ -7,6 +7,7 @@ from login.models import Member, Class, Staff, MemberLevel, User
 from login.forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model,authenticate, login
+from datetime import datetime, date, time, timedelta
 from rest_framework.decorators import api_view
 
 # Create your views here.
@@ -42,7 +43,6 @@ def index(request, user_id):
     }
     return render(request, 'profile/index.html', context)
 
-# also need user id input here
 @api_view(['PUT'])
 def UpdateEmail(request):
     user_id = request.user.id
@@ -54,7 +54,6 @@ def UpdateEmail(request):
             #return HttpResponseRedirect(reverse('profile:index' ),{'user_id'=user_id})#args=(question.id,)))
         return HttpResponseRedirect(reverse('profile:index',args = {user_id}))
 
-# also need user id input here
 @api_view(['PUT'])
 def UpdatePhone(request):
     user_id = request.user.id
@@ -105,7 +104,6 @@ def registerClass(request, class_id):
         }
         return render(request, 'profile/classlist.html', context)
 
-# implement raw sql query later on
 def staff(request):
     try:
         # need to adjust given input
@@ -135,6 +133,16 @@ def signup(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email FROM login_user u WHERE u.username = %s", [username])
+                row = cursor.fetchone()
+                mid  = row[0]
+                mname = row[1] + ' ' + row[2]
+                memail = row[3]
+                mphone = 1010101010
+                expired = date(datetime.now().year, datetime.now().month, datetime.now().day) + timedelta(days=30)
+            with connection.cursor() as cursor:
+                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, phone_number, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, mphone, 'B', expired])
             return redirect('profile:login')
     #travis, insert a new member after sign up
     else:

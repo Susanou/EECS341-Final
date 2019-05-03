@@ -69,7 +69,7 @@
     Enrolled class list:
     <ul>
         {% for class in classes %}
-        <li><a href="{% url 'profile:class' class.0%}">{{class.1}}</a>
+        <li>{{class.1}}   <a href="{% url 'profile:class' class.0%}">See more details </a>
         <a href="{% url 'profile:index'%}">delete</a></li>
         {% endfor %}
     </ul>
