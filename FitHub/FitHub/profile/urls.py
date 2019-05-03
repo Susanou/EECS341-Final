@@ -17,4 +17,5 @@ urlpatterns = [
     path('UpdateEmail',views.UpdateEmail, name='UpdateEmail'),
     path('UpdatePhone',views.UpdatePhone, name='UpdatePhone'),
     path('<int:class_id>/registerClass',views.registerClass, name='registerClass'),
+    path('<int:class_id>/deleteClass',views.deleteClass, name='deleteClass'),
 ]

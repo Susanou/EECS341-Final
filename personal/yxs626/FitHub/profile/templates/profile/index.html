@@ -37,7 +37,7 @@
         <label for="uphone">Phone number: </label>  <br>
         <input type="tel" id="uphone" name="uphone" pattern="[0-9]{10}" value="{{member.2}}">
         <input type="submit" value="update"><br>
-        <small> *Example: 1234567890</small>
+        <small> *Example: 1234567890. <br> Your phone number may be initialized as "1010101010" upon registration. </small>
     </div>
 </form>
 
@@ -65,17 +65,30 @@
 
 <h4> Class Information </h4>
 
-<p1>
-    Enrolled class list:
+<p>
+    <b>Enrolled class list:</b>
     <ul>
         {% for class in classes %}
-        <li>{{class.1}}   <a href="{% url 'profile:class' class.0%}">See more details </a>
-        <a href="{% url 'profile:index'%}">delete</a></li>
-        {% endfor %}
+        <li><b>{{class.1}}</b>
+            <a href="{% url 'profile:class' class.0%}">see more details</a>
+            <form action="{% url 'profile:deleteClass' class.0%}" method="post">
+                    {% csrf_token %}
+                      <div>
+                          <input type="hidden" name=test value=1>
+                          <input type="submit" value="Delete">
+                      </div>
+                  </form>
+        {% endfor %}  
     </ul>
 </p>
 
-<p1>
+<p>
+    {% if empty %}
+        You have no enrolled class yet.
+    {% endif %}
+</p>
+
+<p>
     Want to enroll more classes?
     <a href="{% url 'profile:classlist'%}">sign up for classes</a>
 </p>

@@ -23,6 +23,7 @@ def index(request, user_id):
         with connection.cursor() as cursor:
             cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [user_id])
             classes = cursor.fetchall()
+            empty = len(classes) == 0
         with connection.cursor() as cursor:
             cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
             l = cursor.fetchone()[0]
@@ -40,6 +41,7 @@ def index(request, user_id):
         'member' : member,
         'classes': classes,
         'level': level,
+        'empty': empty,
     }
     return render(request, 'profile/index.html', context)
 
@@ -103,6 +105,22 @@ def registerClass(request, class_id):
             'back': 'go back to class list'
         }
         return render(request, 'profile/classlist.html', context)
+
+def deleteClass(request, class_id):
+    user_id = request.user.id
+    if request.method == 'POST':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM login_member_classes WHERE login_member_classes.member_id = %s AND login_member_classes.class_id = %s", [user_id, class_id])
+            msg = 'ADMIN: class successfully deleted'
+
+        except IntegrityError as e:
+            msg = 'ADMIN: class already deleted'
+        context = {
+            'msg': msg,
+            'back': 'go back to profile'
+        }
+        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
 
 def staff(request):
     try:
