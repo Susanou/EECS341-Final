@@ -28,17 +28,11 @@ hr {
     border-width: 1px;
   }
   
-  input{
+input{
     color:#000000;
 }
 
 input[type=submit] {
-    color: #ffffff;
-    background-color: rgb(143, 143, 143);
-    border:2px outset rgb(143, 143, 143);
-}
-
-button[type=submit] {
     color: #ffffff;
     background-color: rgb(143, 143, 143);
     border:2px outset rgb(143, 143, 143);

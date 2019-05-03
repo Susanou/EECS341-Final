@@ -20,11 +20,11 @@
         <small> *please contact the admin if you need to change your legal full name</small>
     </div>
 </form>
-
-<form action="UpdateEmail" method="post">
+<form action="{% url 'profile:UpdateEmail'%}" method="post">
   {% csrf_token %}
     <div>
         <label for="uemail">Email address: </label>  <br>
+        <input type="hidden" id="user_id" value="{{g_user_id}}">
         <input type="email" id="uemail" name="uemail" value="{{member.1}}">
         <input type="submit" value="update"> <br>
         <small> *Example: abc@case.edu </small>
@@ -58,7 +58,7 @@
 </p>
 
 <!-- change below to update membership status page, need to create this new one -->
-<a href="{% url 'profile:staff'%}">click to update membership status</a> 
+<a href="{% url 'profile:staff'%}">click to update membership status</a>
 
 <br>
 <br>
@@ -79,11 +79,5 @@
     Want to enroll more classes?
     <a href="{% url 'profile:classlist'%}">sign up for classes</a>
 </p>
-
-<p1>
-    No longer want your account?
-    <a href="{% url 'profile:index'%}">delete account</a>
-</p>
-
 
 {% endblock content %}
