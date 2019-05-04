@@ -3,29 +3,34 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.db import connection, IntegrityError
 from django.db.models import Count, query
-from login.models import Member, Class, Staff, MemberLevel, User
-from login.forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model,authenticate, login
 from datetime import datetime, date, time, timedelta
 from rest_framework.decorators import api_view
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+from login.models import Member, Class, Staff, MemberLevel, User
+from login.forms import CustomUserCreationForm
+from login.decorators import member_required
 
 # Create your views here.
 
 #testing directing to url
-def index(request, user_id):
+@login_required
+def index(request):
     try:
         # need to adjust given input
         #using raw sql
         with connection.cursor() as cursor:
-            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
+            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [request.user.id])
             member = cursor.fetchone()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [user_id])
+            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [request.user.id])
             classes = cursor.fetchall()
             empty = len(classes) == 0
         with connection.cursor() as cursor:
-            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
+            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [request.user.id])
             l = cursor.fetchone()[0]
         levels = {
         "B": "Bronze",
@@ -155,17 +160,16 @@ def signup(request):
                 mid  = row[0]
                 mname = row[1] + ' ' + row[2]
                 memail = row[3]
-                mphone = 1010101010
                 expired = date(datetime.now().year, datetime.now().month, datetime.now().day) + timedelta(days=30)
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, phone_number, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, mphone, 'B', expired])
+                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, 'B', expired])
             return redirect('profile:login')
     #travis, insert a new member after sign up
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup/signup.html',{'form':form})
 
-def login_view(request):
+def login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
@@ -174,7 +178,7 @@ def login_view(request):
         context = {
             'user_id' : user.id
         }
-        return HttpResponseRedirect(reverse('profile:index',args = {user.id}) )
+        return HttpResponseRedirect(reverse('profile:index') )
     else:
         return render(request, 'login/login.html')
 
