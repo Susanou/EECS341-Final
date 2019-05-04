@@ -182,7 +182,13 @@ def login_view(request):
 
 
 def memupdatepage(request):
-    return render(request, 'profile/memupdate.html')
+    
+    # ni hao shu yue, qing ni xie database hao ma?
+    
+    context = {
+        'price': price
+    }
+    return render(request, 'profile/memupdate.html',)
 
 def memupdate(request):
     user_id = request.user.id
