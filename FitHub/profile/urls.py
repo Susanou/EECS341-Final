@@ -7,6 +7,7 @@ app_name = 'profile'
 
 urlpatterns = [
     # "/profile" is the prefix
+    path('', views.index, name='index'),
     path('<int:user_id>', views.index, name='index'),
     path('login', views.login_view, name='login'),
     path('logout', auth_views.LogoutView.as_view(template_name='login/logout.html'), name='logout'),
@@ -18,4 +19,7 @@ urlpatterns = [
     path('UpdatePhone',views.UpdatePhone, name='UpdatePhone'),
     path('<int:class_id>/registerClass',views.registerClass, name='registerClass'),
     path('<int:class_id>/deleteClass',views.deleteClass, name='deleteClass'),
+    path('signup', views.signup, name='signup'),
+    path('memupdate', views.memupdate, name='memupdate'),
+    path('memupdatepage', views.memupdatepage, name='memupdatepage')
 ]
