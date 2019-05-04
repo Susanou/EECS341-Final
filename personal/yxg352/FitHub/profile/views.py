@@ -174,9 +174,7 @@ def login_view(request):
         context = {
             'user_id' : user.id
         }
-        #return redirect(reverse('profile:%d' % user.id))
-        return redirect('profile:login')
-        #return HttpResponseRedirect(reverse('profile/%s' % user.id))
+        return HttpResponseRedirect(reverse('profile:index', args = {user.id}))
     else:
         return render(request, 'login/login.html')
 
