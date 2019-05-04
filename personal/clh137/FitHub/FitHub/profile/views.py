@@ -1,29 +1,35 @@
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.db import connection, IntegrityError
 from django.db.models import Count, query
-from login.models import Member, Class, Staff, MemberLevel, User
-from login.forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model,authenticate, login
 from rest_framework.decorators import api_view
 
+
+from login.models import Member, Class, Staff, MemberLevel, User
+from login.forms import CustomUserCreationForm
+from login.decorators import member_required
 # Create your views here.
 
 #testing directing to url
-def index(request, user_id):
+@login_required
+@member_required
+def index(request):
     try:
         # need to adjust given input
         #using raw sql
         with connection.cursor() as cursor:
-            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
+            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [request.user.id])
             member = cursor.fetchone()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [user_id])
+            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [request.user.id])
             classes = cursor.fetchall()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
+            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [request.user.id])
             l = cursor.fetchone()[0]
         levels = {
         "B": "Bronze",

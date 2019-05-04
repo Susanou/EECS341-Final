@@ -73,6 +73,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FitHub.wsgi.application'
 
+# Custom Django auth settings
+# use later
+'''
+AUTH_USER_MODEL = 'classroom.User'
+
+LOGIN_URL = 'login'
+
+LOGOUT_URL = 'logout'
+
+LOGIN_REDIRECT_URL = 'home'
+
+LOGOUT_REDIRECT_URL = 'home'
+'''
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
