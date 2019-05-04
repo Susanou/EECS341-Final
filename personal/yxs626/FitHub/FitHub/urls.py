@@ -27,5 +27,6 @@ urlpatterns = [
     path('accounts/profile/', include('profile.urls')),
     path('signup', profile_views.signup, name='signup'),
     path('admin/', admin.site.urls),
-    url(r'^api/$', schema_view),
+    # url(r'^$', include('profile.urls')),
+    path('', include('landing.urls')),
 ]

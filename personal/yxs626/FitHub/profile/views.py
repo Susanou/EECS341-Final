@@ -174,8 +174,27 @@ def login_view(request):
         context = {
             'user_id' : user.id
         }
-        #return redirect(reverse('profile:%d' % user.id))
-        return redirect('profile:login')
-        #return HttpResponseRedirect(reverse('profile/%s' % user.id))
+        return HttpResponseRedirect(reverse('profile:index',args = {user.id}) )
     else:
         return render(request, 'login/login.html')
+
+
+def memupdatepage(request):
+    return render(request, 'profile/memupdate.html')
+
+def memupdate(request):
+    user_id = request.user.id
+    levels = {
+        "Bronze": "B",
+        "Silver": "S",
+        "Gold": "G",
+        "Platinum": "P",
+        "Diamond": "D",
+        }
+    if request.method == 'POST':
+        newmem = request.POST.get('umem',None)
+        level = levels[newmem]
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE login_member SET level_id = %s WHERE login_member.user_id = %s", [level, user_id])
+        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
+
