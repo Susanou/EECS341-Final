@@ -180,7 +180,15 @@ def login_view(request):
 
 
 def memupdatepage(request):
-    return render(request, 'profile/memupdate.html')
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT l.price from login_memberlevel l")
+        price = cursor.fetchall()
+    context = {
+        'price': price
+    }
+
+    return render(request, 'profile/memupdate.html', context)
 
 def memupdate(request):
     user_id = request.user.id
