@@ -6,6 +6,7 @@
   <form method='POST'>
       {% csrf_token %}
       <div>
+          {{errormsg}}
           <label for="username">Username: </label>  <br>
           <input type="username" id="username" name="username">
           <input type="passwords" id="password" name="password">
