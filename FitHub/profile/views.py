@@ -10,14 +10,12 @@ from django.contrib.auth import get_user_model,authenticate, login
 from datetime import datetime, date, time, timedelta
 from rest_framework.decorators import api_view
 
-# Create your views here.
-
-#testing directing to url
+# display the user portal
 def index(request):
     try:
-        # need to adjust given input
-        #using raw sql
+        # retrieve user id from HTTP request
         user_id = request.user.id
+        # retrieve the user information 
         with connection.cursor() as cursor:
             cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
             member = cursor.fetchone()
@@ -28,14 +26,17 @@ def index(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
             l = cursor.fetchone()[0]
+
         levels = {
-        "B": "Bronze",
-        "S": "Silver",
-        "G": "Gold",
-        "P": "Platinum",
-        "D": "Diamond"
+            "B": "Bronze",
+            "S": "Silver",
+            "G": "Gold",
+            "P": "Platinum",
+            "D": "Diamond"
         }
         level = levels[l]
+
+    # technically not necessary, just for the sake of coding standard
     except Member.DoesNotExist:
         raise Http404("no such member")
     context = {
@@ -46,32 +47,33 @@ def index(request):
     }
     return render(request, 'profile/index.html', context)
 
-# do not add the api thing here, it crashes
+# update the email of users
 def UpdateEmail(request):
     user_id = request.user.id
     if request.method == 'POST':
-        mname = 'Melody'
         newemail = request.POST.get('uemail',None)
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET email = %s WHERE login_member.user_id = %s", [newemail, user_id])
-            #return HttpResponseRedirect(reverse('profile:index' ),{'user_id'=user_id})#args=(question.id,)))
+           
         return HttpResponseRedirect(reverse('profile:index'))
 
-# do not add the api thing here, it crashes
+# update phone number of users 
 def UpdatePhone(request):
     user_id = request.user.id
     if request.method == 'POST':
-        mname = 'Melody'
         newphone = request.POST.get('uphone',None)
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.user_id = %s", [newphone, user_id])
         return HttpResponseRedirect(reverse('profile:index'))
 
+# display the information of a specific class
 @api_view(['GET'])
 def classInfo(request, class_id):
+    # retrieve normal class information
     with connection.cursor() as cursor:
         cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end, s.name, c.description FROM login_class c, login_staff s WHERE c.id = %s AND s.user_id = c.staff_id" , [class_id])
         class_object = cursor.fetchone()
+    # retrieve the number of enrolled students of this class
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(DISTINCT id) FROM login_member_classes WHERE login_member_classes.class_id = %s", [class_id])
         row = cursor.fetchone()
@@ -82,7 +84,9 @@ def classInfo(request, class_id):
     }
     return render(request, 'profile/class.html', context)
 
+# display the list of all classes 
 def classlist(request):
+    # sort the classes in descending order of popularity among members 
     with connection.cursor() as cursor:
         cursor.execute("SELECT c.id, c.name, COUNT(DISTINCT l.id) FROM login_class c, login_member_classes l WHERE c.id = l.class_id GROUP BY c.id, c.name ORDER BY COUNT(DISTINCT l.id) DESC")
         classlist = cursor.fetchall()
@@ -91,6 +95,7 @@ def classlist(request):
     }
     return render (request, 'profile/classlist.html', context)
 
+# let member to register for a new class
 def registerClass(request, class_id):
     user_id = request.user.id
     if request.method == 'POST':
@@ -98,7 +103,7 @@ def registerClass(request, class_id):
             with connection.cursor() as cursor:
                 cursor.execute("INSERT INTO login_member_classes (member_id, class_id) VALUES (%s, %s) ", [user_id, class_id])
             msg = 'ADMIN: class successfully registered'
-
+        # in case when the student has already registered the class, print a msg on the website indicating a repetition in registration
         except IntegrityError as e:
             msg = 'ADMIN: class already registered'
         context = {
@@ -107,6 +112,7 @@ def registerClass(request, class_id):
         }
         return render(request, 'profile/classlist.html', context)
 
+# delete a class that is already registered 
 def deleteClass(request, class_id):
     user_id = request.user.id
     if request.method == 'POST':
@@ -123,10 +129,11 @@ def deleteClass(request, class_id):
         }
         return HttpResponseRedirect(reverse('profile:index'))
 
+# display the staff portal of a user if the user is authorized as a staff 
 def staff(request):
     try:
-        # need to adjust given input
         user_id = request.user.id
+        # retrieve the staff information and list of classes taught by the staff
         with connection.cursor() as cursor1, connection.cursor() as cursor2:
             cursor1.execute("SELECT s.name FROM login_staff s WHERE s.user_id = %s", [user_id])
             cursor2.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_class c WHERE c.staff_id = %s", [user_id])
@@ -134,7 +141,10 @@ def staff(request):
             classes = cursor2.fetchall()
         empty = len(classes) == 0
     except IndexError as e:
-        raise Http404("No matching staff portal, please contact admin to become a staff.")
+        context = {
+            'errormsg': 'You are not a staff yet, please contact admin to register as a staff.'
+        }
+        return render(request, 'profile/index.html', context)
     context = {
         'staff' : staff,
         'classes': classes,
