@@ -39,7 +39,7 @@ def index(request):
     # technically not necessary, just for the sake of coding standard
     except TypeError as e:
         ## return to welcome page
-        return HttpResponseRedirect(reverse('landing:'))
+        return HttpResponseRedirect(reverse('landing:index'))
 
     context = {
         'member' : member,

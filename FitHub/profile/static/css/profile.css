@@ -12,8 +12,7 @@ body{
     color: white;
 }
 
-img { /* svg on an img tag */
-
+.fit{
     filter: invert(1);
   }
 

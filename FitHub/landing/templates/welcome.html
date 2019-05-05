@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 
 {% comment %} <header class="header">
@@ -22,6 +22,7 @@
   </p>
 </section>
 
+<br>
 <section class="landing-section langing-features">
   <section class="landing-feature feature-music-services">
     <h3>Come checkout Fithub</h3>
@@ -35,7 +36,11 @@
 
     <br>
   </section>
+
+  <img src="{% static "greet.png" %}" alt="greetings" width = "350pt"/>
   <section class="landing-feature feature-notifications">
+
+  <br>
     <h4>Sign up today!</h4>
     <a href="{% url 'profile:signup'%}"> signup </a>
     <h4>Already have an account?</h4>
