@@ -14,8 +14,11 @@ May 5, 2019
   - [User Interface](#user-interface)
   - [File Structure](#file-structure)
   - [Database](#database)
-  - [Responsibilities and Lessons Learnt](#responsibilities-and-lessons-learnt)
+  - [Responsibilities and Lessons Learned](#responsibilities-and-lessons-learned)
       - [Yue Shu](#yue-shu)
+      - [Yihe Guo](#yihe-guo)
+      - [Melody Li](#melody-li)
+      - [Cameron Hochberg](#cameron-hochberg)
 
 ---
 
@@ -91,8 +94,30 @@ While the Django framework would automatically utilize the models for administra
 
 ---
 
-## Responsibilities and Lessons Learnt
+## Responsibilities and Lessons Learned
 
 #### Yue Shu 
 
-I'm the program manager, database manager and the frontend developer of most of the templates in our project. I organized the development process of our project in a manner similar to the Scrum development approach
+I'm the program manager, database manager and the frontend developer of most of the templates in our project. I'm also the scrum master of our group as our project is organized in a manner similar to the `Scrum` development approach: 
+- I allocated the product backlog at the beginning of our project 
+- I make the daily sprint planning and assign tasks to our group members in both our groupchat and the project dashboard of our git repository 
+- We perform the scrum meetings on a daily basis before the sprints
+- We merge our commits and have the sprint review meetings by the end of everyday, where I will allocate and refine all the backlogs for our next sprint
+
+As I'm the database manager of our project, I set up the database and basically wrote all `SQL` queries used by our view functions. I also formulated most of the templates of our website, and resolved some of the key backend issues such as the encapsulation of user data, etc. 
+
+Through the scope of our project, I got to familiarize Scrum as a development process, and get adapt to Django as a web framework. I'm glad to work as a PM in field with my teammates. 
+
+#### Yihe Guo
+
+
+
+#### Melody Li
+
+
+
+#### Cameron Hochberg
+
+
+
+
