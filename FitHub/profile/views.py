@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 
 from login.models import Member, Class, Staff, MemberLevel, User
 from login.forms import CustomUserCreationForm
-from login.decorators import member_required
+from login.decorators import member_required, staff_required
 
 # Create your views here.
 
@@ -151,7 +151,9 @@ def signup(request):
     if request.method=='POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit = False)
+            user.is_member = True
+            user.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
             with connection.cursor() as cursor:

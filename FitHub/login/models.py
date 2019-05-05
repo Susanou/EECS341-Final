@@ -12,8 +12,8 @@ from django.contrib.auth import get_user_model
 #    pass
 
 class User(AbstractUser):
-    is_student = models.BooleanField(default=False)
-    is_teacher = models.BooleanField(default=False)
+    is_member = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key = True)
