@@ -84,12 +84,12 @@ def classInfo(request, class_id):
 
 def classlist(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM login_class")
+        cursor.execute("SELECT c.id, c.name, COUNT(DISTINCT l.id) FROM login_class c, login_member_classes l WHERE c.id = l.class_id GROUP BY c.id, c.name ORDER BY COUNT(DISTINCT l.id) DESC")
         classlist = cursor.fetchall()
     context = {
         'classlist': classlist,
     }
-    return render (request, 'profile/classlist.html',context)
+    return render (request, 'profile/classlist.html', context)
 
 def registerClass(request, class_id):
     user_id = request.user.id
