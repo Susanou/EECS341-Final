@@ -1,6 +1,6 @@
 # EECS341 Final Project Report 
 
-Prepared by: Yihe Guo, Cameron Hochberg, Melody Li, Yue Shu
+Prepared by: Yihe Guo, Melody Li, Yue Shu
 May 5, 2019
 
 ---
@@ -56,28 +56,28 @@ Once you have successfully installed `Django 2.0.6` and all the other requiremen
 $ python3 manage.py runserver
 ```
 
-Now you should be able to land on our welcome page by typing out your localhost IP and default port number `127.0.0.1:8000` in your web browser and start your journey with `FitHub`!
+Now you should be able to land on our welcome page by typing out your localhost IP and default port number `127.0.0.1:8000` in your web browser and start your journey with FitHub!
 
 ---
 
 ## User Interface
 
-As the graph below, **when a user first enters the website, he is greeted by a welcome page where they are introduced to FitHub and its services**. **The user** could then choose to sign up for a member account for FitHub, or login **if they already have an account**. Since FitHub provides the best service to its members exclusively, non-members **are not allowed further access to FitHub websites**.
+When a user first enters the website, this user is greeted by a welcome page where this user is introduced to FitHub and its services. The user could then choose to sign up for a member account for FitHub, or login if the user already have an account. Since FitHub provides the best service to its members exclusively, non-members are not allowed further access to FitHub websites.
 
 
-Upon login, the user is presented **with his user information page**, **where he could make changes to his email and phone number**. However, the user will not be able to change **his name** without contacting the administration office for the sake of identity security. The user information page is the core webpage for the whole site, most functions this website provides have user profile page as its base. **For example, the user could check and potentially update his membership status if requested**. **He could check the classes he is registered for, view the information of his classes, or remove the classes he is enrolled in**. There is also a link on the user information page to redirect the user to a sign up page **where he is presented** with the complete list of classes.
+Upon login, the user is presented with the user's information page, where this user could make changes to the email and phone number field. However, the user will not be able to change the name field without contacting the administration office for the sake of identity security. The user information page is the core webpage for the whole site, most functions this website provides have user profile page as their base. For example, the user could check and potentially update the user's membership status if requested. The user could check the classes this user is registered for, view the information of this user's classes, or remove the classes this user is enrolled in. There is also a link on the user information page to redirect the user to a sign up page where this user is presented with the complete list of classes.
 
-The user information page contains a link which allows the user to switch to the staff page **if he is a staff**, **but he cannot register** to become a tutor as all tutor approval processes has to be done in person for safety purposes. Once the user is done with the FitHub website, **he could log out of his account** by clicking on the log out button at the very bottom of the page. 
+The user information page contains a link which allows the user to switch to the staff page if this user is a staff, but users cannot register to become tutors as all tutor approval processes has to be done in person for safety purposes. Once the user is done with the FitHub website, a user could log out of the account by clicking on the log out button at the very bottom of the page. 
 
 ---
 
 ## File Structure
 
-Both our code and data are under the outer `FitHub` folder, which contains the following files: `manage.py` and `requirements.txt`. It also contains the following subfolders: `FitHub`, `landing`, `login`, `profile`, and `templates`. 
+Both our code and data are under the outer `FitHub` folder, which contains the following files: `manage.py` and `requirements.txt`. It also contains the following subfolders: `FitHub`, `landing`, `login`, and `profile`.
 
-The `FitHub` subfolder contains the files are used and shared across the Django applications. `landing`, `login`, and `profile` are Django application folders, among which `landing` is the welcome page, `login` handles the login requests, and `profile` is the most important one enabling most of the website features. 
+The `FitHub` subfolder contains the files are used and shared across the Django applications. Landing, login, and profile are Django application folders, among which `landing` is the welcome page, `login` handles the login requests, and `profile` is the most important one enabling most of the website features. 
 
-Three application folders all have similar subfiles: `admin.py` is the file in which the models are registered. `models.py` contains the model declarations, which are python objects that represent relations. The models we’ve written in this file are base on the SQL table declaration file `sqlCode.sql` in the outermost `FitHub` folder. We’ve written the models here in order for Django to run. 
+Three application folders all have similar subfiles: `admin.py` is the file in which the models are registered. `models.py` contains the model declarations, which are python objects that represent relations. The models we’ve written in this file are base on the SQL table declaration file `data.sql` in the outermost `FitHub` folder. We’ve written the models here in order for Django to run. 
 
 `apps.py` allows us to set configurations for the application, `profile` in this case. `urls.py` is where the url patterns are defined, in which the path function takes three arguments: first is route which is a url pattern and second is the view that is linked to the url. Third is named url patterns used in the reverse function for getting the url given name. 
 
@@ -89,7 +89,7 @@ Finally, `view.py` is where all the view functions are collected. View functions
 
 We first writeup our database with SQL createtables and then insert data entries into the tables as something similar to what is now displayed in the `sqlCode.sql` file. We then translate the createtables to Django models as required by the Django framework, and then generate the actual `sqlCode.sql` file accordingly with the Django `sqlmigrate` command. 
 
-While the Django framework would automatically utilize the models for administration purposes, such as for operations done in the `admin` page, we wrote all of our queries used by our functions in `MySQL` to fulfill the `CRUD` operation requirements as well as the aggregation function requirements. Refer to the `profile/views.py` file for more details about our `SQL` queries. 
+While the Django framework would automatically utilize the models for administration purposes, such as for operations done in the `admin` page, we wrote all of our queries used by our functions in `MySQL` to fulfill the `CRUD` operation requirements as well as the aggregation function requirements. Refer to the `views.py` file in the profile folder for more details about our `MySQL` queries. 
 
 ---
 

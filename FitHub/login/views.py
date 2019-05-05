@@ -21,7 +21,7 @@ User = get_user_model()
 
 # Create your views here.
 
-#class StudentSingUpView(CreateView):
+
 def login_view(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
