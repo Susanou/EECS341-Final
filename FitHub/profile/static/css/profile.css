@@ -37,3 +37,18 @@ input[type=submit] {
     background-color: rgb(143, 143, 143);
     border:2px outset rgb(143, 143, 143);
 }
+
+
+.nav{
+
+    font-family: "Arial Black", Gadget, sans-serif;
+    display: inline-block;
+    margin-left: 20pt;
+    color:rgb(143, 143, 143)
+}
+
+a{
+
+    color: rgb(224, 144, 53);
+    font-size: 120%;
+}
