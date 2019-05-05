@@ -5,9 +5,7 @@
 <h1> User Portal</h1>
 <small>
     Already a staff?
-    <!-- need to check condition later on, switch to only corresponding staff profile-->
     <a href="{% url 'profile:staff'%}">switch to staff profile</a> <br>
-    {{errormsg}}
 </small>
 <br>
 
@@ -60,7 +58,6 @@
     Valid untill: {{member.4}}
 </p>
 
-<!-- change below to update membership status page, need to create this new one -->
 <a href="{% url 'profile:memupdatepage'%}">click to update membership status</a>
 
 <hr>

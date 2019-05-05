@@ -6,7 +6,6 @@ from . import views
 app_name = 'profile'
 
 urlpatterns = [
-    # "/profile" is the prefix
     path('', views.index, name='index'),
     path('<int:user_id>', views.index, name='index'),
     path('login', views.login_view, name='login'),

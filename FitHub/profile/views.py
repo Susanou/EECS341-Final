@@ -37,8 +37,10 @@ def index(request):
         level = levels[l]
 
     # technically not necessary, just for the sake of coding standard
-    except Member.DoesNotExist:
-        raise Http404("no such member")
+    except TypeError as e:
+        ## return to welcome page
+        return HttpResponseRedirect(reverse('landing:'))
+
     context = {
         'member' : member,
         'classes': classes,
@@ -140,11 +142,12 @@ def staff(request):
             staff = cursor1.fetchall()[0]
             classes = cursor2.fetchall()
         empty = len(classes) == 0
+    # inform the user to contact admin in order to become a staff
     except IndexError as e:
         context = {
             'errormsg': 'You are not a staff yet, please contact admin to register as a staff.'
         }
-        return render(request, 'profile/index.html', context)
+        return HttpResponseRedirect(reverse('profile:index'))
     context = {
         'staff' : staff,
         'classes': classes,
@@ -152,30 +155,33 @@ def staff(request):
     }
     return render(request, 'profile/staff.html', context)
 
+# allow the user to signup
 def signup(request):
     User = get_user_model()
     if request.method=='POST':
         form = CustomUserCreationForm(request.POST)
+        # given valid signup form, allow the signup 
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
+            # insert a new member entry to the table according to the given user info
             with connection.cursor() as cursor:
                 cursor.execute("SELECT u.id, u.first_name, u.last_name, u.email FROM login_user u WHERE u.username = %s", [username])
                 row = cursor.fetchone()
                 mid  = row[0]
                 mname = row[1] + ' ' + row[2]
                 memail = row[3]
-                mphone = 1010101010
                 expired = date(datetime.now().year, datetime.now().month, datetime.now().day) + timedelta(days=30)
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, phone_number, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, mphone, 'B', expired])
+                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, 'B', expired])
             return redirect('profile:login')
-    #travis, insert a new member after sign up
+    
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup/signup.html',{'form':form})
 
+# confirm user info and allows user to login if applicable 
 def login_view(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
@@ -189,18 +195,17 @@ def login_view(request):
     else:
         return render(request, 'login.html')
 
-
+# render to member update page and display the membership level prices 
 def memupdatepage(request):
-
     with connection.cursor() as cursor:
         cursor.execute("SELECT l.price from login_memberlevel l")
         price = cursor.fetchall()
     context = {
         'price': price
     }
-
     return render(request, 'profile/memupdate.html', context)
 
+# update membership level, we decided not to handle the prices and make the users charged by our system by the end of the year
 def memupdate(request):
     user_id = request.user.id
     levels = {
