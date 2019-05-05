@@ -6,7 +6,8 @@
 <small>
     Already a staff?
     <!-- need to check condition later on, switch to only corresponding staff profile-->
-    <a href="{% url 'profile:staff'%}">switch to staff profile</a>
+    <a href="{% url 'profile:staff'%}">switch to staff profile</a> <br>
+    {{errormsg}}
 </small>
 <br>
 
