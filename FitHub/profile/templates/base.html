@@ -6,11 +6,40 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
         {% comment %} <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'> {% endcomment %}
         <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     </head>
     <body>
     <div class = 'fithub'>
     <header>
         <img src="{% static "fithublogo.svg" %}" alt="fithub logo" style="width:300px;height:100px;" hspace = '20pt'/>
+        <br>
+        <br>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarColor02">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'landing:index' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'profile:index' %}">profile</a>
+      </li>
+    </ul>
+    {% if user.is_authenticated %}
+        You are logged in as {{ user.username }}!
+        <p><a href="{% url 'profile:logout' %}">logout</a></p>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login:login' %}">login</a>
+    {% endif %}
+  </div>
+</nav>    
+
     </header>  
     </div>
     <div class = 'padding'>
