@@ -18,7 +18,6 @@ May 5, 2019
       - [Yue Shu](#yue-shu)
       - [Yihe Guo](#yihe-guo)
       - [Melody Li](#melody-li)
-      - [Cameron Hochberg](#cameron-hochberg)
 
 ---
 
@@ -114,10 +113,8 @@ Through the scope of our project, I got to familiarize Scrum as a development pr
 
 #### Melody Li
 
+I'm the primary Django developer in the group. My responsibilities are to create user registration form to allow users to signup and login, as well as to connect the frontend HTTP files with our backend SQL database through various HTTP methods. 
 
+I started the basic structure of each HTTP file and let Yue finalize with details, created method stubs in `profile/views.py` with user request and appropriate parameters to support SQL query inputs, and utilized urls to connect our web pages together. 
 
-#### Cameron Hochberg
-
-
-
-
+Through the development experience of this project, I got to learn how to use Django as a web framework, how to connect frontend elements with backend database, and how to collaborate with both software enginners and program manager to work in a more interdesciplinary manner. 
