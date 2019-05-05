@@ -74,17 +74,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FitHub.wsgi.application'
 
-# Custom Django Auth settings
-
-AUTH_USER_MODEL = 'login.User'
-
-LOGIN_URL = 'accounts/login'
-
-LOGOUT_URL = 'account/logout'
-
-LOGIN_REDIRECT_URL = '/profile'
-
-LOGOUT_REDIRECT_URL = '/'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

@@ -3,34 +3,30 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.db import connection, IntegrityError
 from django.db.models import Count, query
+from login.models import Member, Class, Staff, MemberLevel, User
+from login.forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth import get_user_model,authenticate, login
 from datetime import datetime, date, time, timedelta
 from rest_framework.decorators import api_view
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-
-from login.models import Member, Class, Staff, MemberLevel, User
-from login.forms import CustomUserCreationForm
-from login.decorators import member_required, staff_required
 
 # Create your views here.
 
 #testing directing to url
-@login_required
 def index(request):
     try:
         # need to adjust given input
         #using raw sql
+        user_id = request.user.id
         with connection.cursor() as cursor:
-            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [request.user.id])
+            cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
             member = cursor.fetchone()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [request.user.id])
+            cursor.execute("SELECT c.id, c.name, c.location, c.time_day, c.time_start, c.time_end FROM login_member_classes l, login_class c WHERE l.member_id = %s AND l.class_id = c.id" , [user_id])
             classes = cursor.fetchall()
             empty = len(classes) == 0
         with connection.cursor() as cursor:
-            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [request.user.id])
+            cursor.execute("SELECT l.level_status FROM login_memberlevel l, login_member m WHERE m.user_id = %s AND m.level_id = l.level_status", [user_id])
             l = cursor.fetchone()[0]
         levels = {
         "B": "Bronze",
@@ -59,7 +55,7 @@ def UpdateEmail(request):
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET email = %s WHERE login_member.user_id = %s", [newemail, user_id])
             #return HttpResponseRedirect(reverse('profile:index' ),{'user_id'=user_id})#args=(question.id,)))
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}))
+        return HttpResponseRedirect(reverse('profile:index'))
 
 # do not add the api thing here, it crashes
 def UpdatePhone(request):
@@ -69,7 +65,7 @@ def UpdatePhone(request):
         newphone = request.POST.get('uphone',None)
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.user_id = %s", [newphone, user_id])
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )#args=(question.id,)))
+        return HttpResponseRedirect(reverse('profile:index'))
 
 @api_view(['GET'])
 def classInfo(request, class_id):
@@ -125,7 +121,7 @@ def deleteClass(request, class_id):
             'msg': msg,
             'back': 'go back to profile'
         }
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
+        return HttpResponseRedirect(reverse('profile:index'))
 
 def staff(request):
     try:
@@ -151,9 +147,7 @@ def signup(request):
     if request.method=='POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit = False)
-            user.is_member = True
-            user.save()
+            form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
             with connection.cursor() as cursor:
@@ -162,16 +156,17 @@ def signup(request):
                 mid  = row[0]
                 mname = row[1] + ' ' + row[2]
                 memail = row[3]
+                mphone = 1010101010
                 expired = date(datetime.now().year, datetime.now().month, datetime.now().day) + timedelta(days=30)
             with connection.cursor() as cursor:
-                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, 'B', expired])
+                cursor.execute("INSERT INTO login_member (user_id, funds, name, email, phone_number, level_id, expired_date) VALUES (%s, %s, %s, %s, %s, %s, %s)", [mid, 0, mname, memail, mphone, 'B', expired])
             return redirect('profile:login')
     #travis, insert a new member after sign up
     else:
         form = CustomUserCreationForm()
     return render(request, 'signup/signup.html',{'form':form})
 
-def login(request):
+def login_view(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(request, username=username, password=password)
@@ -180,9 +175,9 @@ def login(request):
         context = {
             'user_id' : user.id
         }
-        return HttpResponseRedirect(reverse('profile:index') )
+        return HttpResponseRedirect(reverse('profile:index'))
     else:
-        return render(request, 'login/login.html')
+        return render(request, 'login.html')
 
 
 def memupdatepage(request):
@@ -210,5 +205,5 @@ def memupdate(request):
         level = levels[newmem]
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET level_id = %s WHERE login_member.user_id = %s", [level, user_id])
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
+        return HttpResponseRedirect(reverse('profile:index'))
 

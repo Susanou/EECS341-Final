@@ -13,10 +13,11 @@ from rest_framework.decorators import api_view
 # Create your views here.
 
 #testing directing to url
-def index(request, user_id):
+def index(request):
     try:
         # need to adjust given input
         #using raw sql
+        user_id = request.user.id
         with connection.cursor() as cursor:
             cursor.execute("SELECT m.name, m.email, m.phone_number, m.funds, m.expired_date FROM login_member m WHERE m.user_id = %s", [user_id])
             member = cursor.fetchone()
@@ -54,7 +55,7 @@ def UpdateEmail(request):
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET email = %s WHERE login_member.user_id = %s", [newemail, user_id])
             #return HttpResponseRedirect(reverse('profile:index' ),{'user_id'=user_id})#args=(question.id,)))
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}))
+        return HttpResponseRedirect(reverse('profile:index'))
 
 # do not add the api thing here, it crashes
 def UpdatePhone(request):
@@ -64,7 +65,7 @@ def UpdatePhone(request):
         newphone = request.POST.get('uphone',None)
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET phone_number = %s WHERE login_member.user_id = %s", [newphone, user_id])
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )#args=(question.id,)))
+        return HttpResponseRedirect(reverse('profile:index'))
 
 @api_view(['GET'])
 def classInfo(request, class_id):
@@ -120,7 +121,7 @@ def deleteClass(request, class_id):
             'msg': msg,
             'back': 'go back to profile'
         }
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
+        return HttpResponseRedirect(reverse('profile:index'))
 
 def staff(request):
     try:
@@ -174,9 +175,9 @@ def login_view(request):
         context = {
             'user_id' : user.id
         }
-        return HttpResponseRedirect(reverse('profile:index',args = {user.id}) )
+        return HttpResponseRedirect(reverse('profile:index'))
     else:
-        return render(request, 'login/login.html')
+        return render(request, 'login.html')
 
 
 def memupdatepage(request):
@@ -204,5 +205,5 @@ def memupdate(request):
         level = levels[newmem]
         with connection.cursor() as cursor:
             cursor.execute("UPDATE login_member SET level_id = %s WHERE login_member.user_id = %s", [level, user_id])
-        return HttpResponseRedirect(reverse('profile:index',args = {user_id}) )
+        return HttpResponseRedirect(reverse('profile:index'))
 
