@@ -109,7 +109,10 @@ Through the scope of our project, I got to familiarize Scrum as a development pr
 
 #### Yihe Guo
 
-
+I worked on mostly the front end of the project, mostly working with django, css and some SQL:
+- I setted up several webpages and linked them to the other webpages as well as the database
+- I worked with CSS and HTML to adjust website layout and style
+- I fixed varies bugs and optimized some of the url implementations
 
 #### Melody Li
 
