@@ -3,8 +3,6 @@
 Prepared by: Yihe Guo, Melody Li, Yue Shu
 May 5, 2019
 
----
-
 - [EECS341 Final Project Report](#eecs341-final-project-report)
   - [Introduction](#introduction)
     - [Project Overview](#project-overview)
@@ -45,20 +43,16 @@ The `FitHub` application is developed under the `django` framework, so as long a
 Before deploying all the required packages, please make sure you have `Python 3.6.1` or above installed. All the required packages are specified in `requirements.txt`. We have also implemented a shell script `installReq.sh` to do the work for you, so under `Linux` enviroment, just type the below command in your terminal to have the packages installed:
 
 ```
-
 $ ./installReq.sh
 ```
 
 Once you have successfully installed `Django 2.0.6` and all the other requirements, just type the following command in your terminal to run the `FitHub` application: 
 
 ```
-
 $ python3 manage.py runserver
 ```
 
 Now you should be able to land on our welcome page by typing out your localhost IP and default port number `127.0.0.1:8000` in your web browser and start your journey with FitHub!
-
----
 
 ## User Interface
 
@@ -68,8 +62,6 @@ When a user first enters the website, this user is greeted by a welcome page whe
 Upon login, the user is presented with the user's information page, where this user could make changes to the email and phone number field. However, the user will not be able to change the name field without contacting the administration office for the sake of identity security. The user information page is the core webpage for the whole site, most functions this website provides have user profile page as their base. For example, the user could check and potentially update the user's membership status if requested. The user could check the classes this user is registered for, view the information of this user's classes, or remove the classes this user is enrolled in. There is also a link on the user information page to redirect the user to a sign up page where this user is presented with the complete list of classes.
 
 The user information page contains a link which allows the user to switch to the staff page if this user is a staff, but users cannot register to become tutors as all tutor approval processes has to be done in person for safety purposes. Once the user is done with the FitHub website, a user could log out of the account by clicking on the log out button at the very bottom of the page. 
-
----
 
 ## File Structure
 
@@ -83,15 +75,11 @@ Three application folders all have similar subfiles: `admin.py` is the file in w
 
 Finally, `view.py` is where all the view functions are collected. View functions takes a web request and return the corresponding web response as we defined it. There might also be a `static` folder in the application folder where the `CSS` files are located. The other important subfolder applications have is the templates folder, which is where the actual http files are located.
 
----
-
 ## Database 
 
 We first writeup our database with SQL createtables and then insert data entries into the tables as something similar to what is now displayed in the `sqlCode.sql` file. We then translate the createtables to Django models as required by the Django framework, and then generate the actual `sqlCode.sql` file accordingly with the Django `sqlmigrate` command. 
 
 While the Django framework would automatically utilize the models for administration purposes, such as for operations done in the `admin` page, we wrote all of our queries used by our functions in `MySQL` to fulfill the `CRUD` operation requirements as well as the aggregation function requirements. Refer to the `views.py` file in the profile folder for more details about our `MySQL` queries. 
-
----
 
 ## Responsibilities and Lessons Learned
 
